@@ -17,10 +17,11 @@
  * @return 格式為 "YYYY-MM-DD" 的字串
  */
 std::string getCurrentDate() {
-    time_t t = time(NULL);
-    struct tm* now = localtime(&t);
+    time_t t = time(nullptr);
+    struct tm now;
+	localtime_r(&t, &now);
     char buf[11];
-    strftime(buf, sizeof(buf), "%Y-%m-%d", now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d", &now);
     return std::string(buf);
 }
 

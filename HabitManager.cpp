@@ -57,7 +57,7 @@ void HabitManager::performCheckIn(int id, const std::string& todayDate) {
 
 struct IdMatcher {
     int targetId;
-    IdMatcher(int id) : targetId(id) {}
+    explicit IdMatcher(int id) : targetId(id) {}
     bool operator()(const Habit& h) const { return h.getId() == targetId; }
 };
 
