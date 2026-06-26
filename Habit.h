@@ -8,6 +8,7 @@ private:
     // ── 資料屬性 ──────────────────────────────────────────────
     int         id;            ///< 習慣的唯一識別碼
     std::string name;          ///< 習慣名稱
+    std::string category;      ///< 習慣分類
     int         currentStreak; ///< 目前連續打卡天數
     int         bestStreak;    ///< 歷史最佳連續打卡天數
     std::string lastDate;      ///< 最後打卡日期（格式: "YYYY-MM-DD"；從未打卡則為空字串）
@@ -17,10 +18,10 @@ private:
 
 public:
     // ── 建構子 ────────────────────────────────────────────────
-    Habit(int id, const std::string& name, int currentStreak,
-          int bestStreak, const std::string& lastDate);
+    Habit(int id, const std::string& name, const std::string& category,
+          int currentStreak, int bestStreak, const std::string& lastDate);
 
-    Habit(int id, const std::string& name);
+    Habit(int id, const std::string& name, const std::string& category = "一般");
 
     // ── 核心業務方法 ──────────────────────────────────────────
     void checkIn(const std::string& todayDate);
@@ -28,16 +29,19 @@ public:
     // ── Getters ────────────────────
     int         getId()            const;
     std::string getName()          const;
+    std::string getCategory()      const;
     int         getCurrentStreak() const;
     int         getBestStreak()    const;
     std::string getLastDate()      const;
+    int         getActiveStreak(const std::string& todayDate) const;
 
     // ── Setters ───────────────────────────────────────────────
     void setName(const std::string& newName);
+    void setCategory(const std::string& newCategory);
 
     // 序列化輔助方法
     std::string toCSV() const;
-    std::string toString() const;
+    std::string toString(const std::string& todayDate) const;
 };
 
 #endif // HABIT_H

@@ -16,10 +16,12 @@ private:
 
 public:
     HabitManager();
-    void displayAll() const;
-    void addHabit(const std::string& name);
+    void displayAll(const std::string& todayDate, const std::string& categoryFilter = "") const;
+    void addHabit(const std::string& name, const std::string& category);
     void performCheckIn(int id, const std::string& todayDate);
     void removeHabit(int id);
+    bool renameHabit(int id, const std::string& newName);
+    void displayStats(const std::string& todayDate) const;
 };
 
 #endif // HABITMANAGER_H

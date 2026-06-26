@@ -24,15 +24,20 @@ std::string Habit::getPreviousDay(const std::string& date) {
     return std::string(buf);
 }
 
-Habit::Habit(int id, const std::string& name, int currentStreak,
-             int bestStreak, const std::string& lastDate)
-    : id(id), name(name), currentStreak(currentStreak),
+Habit::Habit(int id, const std::string& name, const std::string& category,
+             int currentStreak, int bestStreak, const std::string& lastDate)
+    : id(id), name(name), category(category), currentStreak(currentStreak),
       bestStreak(bestStreak), lastDate(lastDate) {}
 
-Habit::Habit(int id, const std::string& name)
-    : id(id), name(name), currentStreak(0), bestStreak(0), lastDate("") {}
+Habit::Habit(int id, const std::string& name, const std::string& category)
+    : id(id), name(name), category(category), currentStreak(0), bestStreak(0), lastDate("") {}
 
 void Habit::checkIn(const std::string& todayDate) {
+    if (!lastDate.empty() && todayDate < lastDate) {
+        std::cout << "  [錯誤] 不能為最後打卡日期 (" << lastDate << ") 之前的日期補打卡。\n";
+        return;
+    }
+
     if (lastDate == todayDate) {
         std::cout << "  [已打卡] 「" << name << "」今日已完成打卡，繼續保持！\n";
         return;
@@ -64,23 +69,36 @@ void Habit::checkIn(const std::string& todayDate) {
 
 int         Habit::getId()            const { return id; }
 std::string Habit::getName()          const { return name; }
+std::string Habit::getCategory()      const { return category; }
 int         Habit::getCurrentStreak() const { return currentStreak; }
 int         Habit::getBestStreak()    const { return bestStreak; }
 std::string Habit::getLastDate()      const { return lastDate; }
 
+int Habit::getActiveStreak(const std::string& todayDate) const {
+    if (lastDate.empty()) return 0;
+    if (lastDate == todayDate) return currentStreak;
+    std::string yesterday = getPreviousDay(todayDate);
+    if (lastDate == yesterday) return currentStreak;
+    return 0; // Streak broken
+}
+
 void Habit::setName(const std::string& newName) { name = newName; }
+void Habit::setCategory(const std::string& newCategory) { category = newCategory; }
 
 std::string Habit::toCSV() const {
     std::ostringstream oss;
-    oss << id << "," << name << "," << currentStreak << ","
+    oss << id << "," << name << "," << category << "," << currentStreak << ","
         << bestStreak << "," << lastDate;
     return oss.str();
 }
 
-std::string Habit::toString() const {
+std::string Habit::toString(const std::string& todayDate) const {
     std::ostringstream oss;
-    oss << "  [ID:" << std::setw(2) << std::right << id << "] " << std::setw(15) << std::left << name << "\n";
-    oss << "         連續天數: " << std::setw(3) << currentStreak << " 天"
+    int activeStreak = getActiveStreak(todayDate);
+    oss << "  [ID:" << std::setw(2) << std::right << id << "] " 
+        << std::setw(15) << std::left << name 
+        << " (分類: " << category << ")\n";
+    oss << "         連續天數: " << std::setw(3) << activeStreak << " 天"
         << " | 最佳紀錄: " << std::setw(3) << bestStreak << " 天"
         << " | 最後打卡: "
         << (lastDate.empty() ? "尚未打卡" : lastDate)
